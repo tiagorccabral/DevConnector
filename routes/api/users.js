@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const passport = require("passport");
 
+// Load Input Validation
+const validateRegisterInput = require('../../validations/register');
+const validateLoginInput = require('../../validations/login');
+
 // Load User model
 const User = require('../../models/User');
 
@@ -18,10 +22,18 @@ router.get('/test', (req, res) => res.json({msg: 'Users works!'}));
 // @desc    Tests users route
 // @access  public
 router.post('/register', (req, res) => {
+    const { errors, isValid } = validateRegisterInput(req.body);
+
+    if (!isValid) { // Check if input is Valid
+        return res.status(400).json(errors);
+    }
+
     User.findOne({ email: req.body.email })
         .then(user => {
             if(user) {
-                return res.status(400).json({email: 'Email já existe.'});
+                errors.email = 'Email já existe';
+
+                return res.status(400).json(errors);
             } else {
                 const avatar = gravatar.url(req.body.email, {
                     s: '200', // Size
@@ -53,15 +65,22 @@ router.post('/register', (req, res) => {
 // @desc    Login User / Returning JWT Token
 // @access  public
 router.post('/login', (req, res) => {
+    const { errors, isValid } = validateLoginInput(req.body);
+
+    if (!isValid) { // Check if input is Valid
+        return res.status(400).json(errors);
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
     // Find user by email
     User.findOne({email})
         .then(user => {
+            errors.email = 'Usuário não encontrado.';
             // Checks if user exists
             if(!user) {
-                return res.status(404).json({email: 'Usuário não encontrado.'})
+                return res.status(404).json(errors)
             }
 
             // Compares passwords
