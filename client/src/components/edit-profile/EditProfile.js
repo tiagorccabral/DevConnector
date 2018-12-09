@@ -237,6 +237,14 @@ class EditProfile extends Component {
                                     error={errors.skills}
                                     info="Nos conte um pouco sobre seus conhecimentos."
                                 />
+                                <TextFieldGroup
+                                    placeholder="Usuário do Github"
+                                    name="githubusername"
+                                    value={this.state.githubusername}
+                                    onChange={this.onChange}
+                                    error={errors.githubusername}
+                                    info="Se você deseja ter seus últimos repositórios e um link para seu github, informe sua conta."
+                                />
                                 <TextAreaFieldGroup
                                     placeholder="Pequena biografia"
                                     name="bio"
